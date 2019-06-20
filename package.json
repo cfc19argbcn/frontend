@@ -1,0 +1,13 @@
+{
+  "name": "cfc19argbcn_frontend",
+  "version": "0.0.1",
+  "description": "Call for code 19 \"Argentinos en Barcelona\" Frontend",
+  "main": "index.html",
+  "repository": "https://github.com/cfc19argbcn/frontend.git",
+  "author": "Tomás Novau <tnovau@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "4.17.1"
+  }
+}
