@@ -1,6 +1,6 @@
-var express = require('express');
-var app = express();
-
-app.listen(3000, function () {
-  console.log('App listening on port 3000');
-});
+const express = require("express");
+const app = express();
+const appConfig = require("./config/app-env");
+app.listen(appConfig.port,
+  () => console.log(`App listening on port ${appConfig.port}`)
+);
