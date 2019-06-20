@@ -11,6 +11,15 @@ const parseIntFromConfig = (configValue) => {
 } 
 
 var config = {
-  port: process.env.PORT ? parseIntFromConfig(process.env.PORT) : defaultConfigs.port
+  port: process.env.PORT ? parseIntFromConfig(process.env.PORT) : defaultConfigs.port,
+  mapValsFile: "map_vals.json",
+  mqqtCredentials: {
+    IOT_DEVICE_ID: process.env.IOT_DEVICE_ID,
+    IOT_AUTH_TOKEN: process.env.IOT_AUTH_TOKEN,
+    IOT_API_KEY: process.env.IOT_API_KEY,
+    IOT_ORG_ID: process.env.IOT_ORG_ID,
+    IOT_DEVICE_TYPE: process.env.IOT_DEVICE_TYPE,
+    IOT_EVENT_TYPE: process.env.IOT_EVENT_TYPE
+  }
 };
 module.exports = config;
