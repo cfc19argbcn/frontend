@@ -1,25 +1,62 @@
-
 var options = {
   valueNames: [ 'name', 'city' ]
 };
 
-var hackerList = new List('hacker-list', options);
 var d = new Date();
-var viewModal = function(id) {
-	console.log(id)
-	document.getElementById(id).style.display = ''
-}
-var hideModal = function(id) {
-	console.log("hiding modal: " + id)
-	document.getElementById(id).style.display = 'none'
-}
 
-var headers, rows
+var modalModule = (
+	function() {
+		var elementVisibleDisplay = "";
+		var elementNotVisibleDisplay = "none";
+		var addNodeForm = "addNodeFormContainer";
+		var selectColumnsForm = "selectFileColumns";
+		var updateNodeForm = 'updateNodeFormContainer';
+		/** @param {string} elementId */
+		var viewModal = function(elementId) {
+			console.log("Showing modal: " + elementId);
+			document.getElementById(elementId).style.display = elementVisibleDisplay;
+		};
+		/** @param {string} elementId */
+		var hideModal = function(elementId) {
+			console.log("Hiding modal: " + elementId);
+			document.getElementById(elementId).style.display = elementNotVisibleDisplay;
+		};
+		var hideAddNodeForm = function() {
+			hideModal(addNodeForm);
+		};
+		var showAddNodeForm = function() {
+			viewModal(addNodeForm);
+		};
+		var hideSelectColumnsForm = function() {
+			hideModal(selectColumnsForm);
+		};
+		var showSelectColumnsForm = function() {
+			viewModal(selectColumnsForm);
+		};
+		var hideUpdateForm = function() {
+			hideModal(updateNodeForm);
+		};
+		var showUpdateForm = function() {
+			viewModal(updateNodeForm);			
+		};
+		return {
+			hideAddNodeForm,
+			showAddNodeForm,
+			hideSelectColumnsForm,
+			showSelectColumnsForm,
+			hideUpdateForm,
+			showUpdateForm
+		};
+	}
+)();
+
+var headers
+var rows;
 var polylines = []
 
 var populateAssetOptions = function() {
 	document.getElementById('listNodeIds').options.length = 0
-	Object.keys(assets).map( (asset) => {
+	Object.keys(assets).map(asset => {
 		console.log(asset)
 		var opt = document.createElement("option")
 		opt.text = asset
@@ -54,50 +91,6 @@ var drawAssetPaths = function() {
 	})
 }
 
-var submitFileColumnsForm = function() {
-	var nodeIdSelect = document.getElementById('nodeIdSelect')
-	var nodeLongitudeSelect = document.getElementById('nodeLongitudeSelect')
-	var nodeLatitudeSelect = document.getElementById('nodeLatitudeSelect')
-	var nodeTimeSelect = document.getElementById('nodeTimeSelect')
-	hideModal('selectFileColumns')
-	for (i in rows) {
-		var row = rows[i].replace(/\r?\n|\r/g, " ").split(',')
-		if (! assets[row[nodeIdSelect.selectedIndex]]) {
-			console.log("initializing new asset: " + row[nodeIdSelect.selectedIndex])
-			initTrackableAsset( row[nodeIdSelect.selectedIndex], row[nodeLatitudeSelect.selectedIndex], row[nodeLongitudeSelect.selectedIndex], row[nodeTimeSelect.selectedIndex])
-		} else {
-			assets[row[nodeIdSelect.selectedIndex]]['points'].push([ row[nodeLatitudeSelect.selectedIndex], row[nodeLongitudeSelect.selectedIndex] ])
-			assets[row[nodeIdSelect.selectedIndex]]['timestamps'].push(row[nodeTimeSelect.selectedIndex])
-		}
-		if (i == (rows.length - 1 )) {
-			console.log("all rows imported")
-			var pointLens = []
-			var assetKeys = Object.keys(assets)
-			console.log(assetKeys)
-			assetKeys.map( (key, idx) => {
-				pointLens.push(assets[key]['points'].length)
-				if (idx == assetKeys.length - 1) {
-					var maxLen = Math.max.apply( Math, pointLens)
-					slider.setAttribute("max", maxLen )
-				}
-			})
-		}
-	}
-	var timeView  = document.getElementById("timeView")
-	timeView.onload = function () {
-		timeView.innerHTML = (new Date()).toISOString()
-	}
-	slider.oninput = function() {
-		for (id in assets) {
-			if (assets[id]['points'][this.value]) {
-				updateTrackableAsset( id, assets[id]['points'][this.value][0], assets[id]['points'][this.value][1], id)
-			}
-			if (assets[id]['timestamps'][this.value]) {
-				document.getElementById("timeView").innerHTML = assets[id]['timestamps'][this.value]
-			}
-		}
-	}
-}
 function handleFileSelect(evt) {
 	var files = evt.target.files;
 	for (var i = 0, f; f = files[i]; i++) {
@@ -184,15 +177,40 @@ var initMQTTClient = function(mqttCreds) {
 		onSuccess: function() {
 			console.log("subscription set")
 			mqttClient.onMessageArrived = function (messageObj) {
-				var message = JSON.parse(messageObj.payloadString).d
-				console.log( message)
-				if ( ! assets[message['node_id']] ) {
-					initTrackableAsset(message['node_id'], message['long'], message['lat'] )
+				/**
+				 * @type {{
+				 *	node_id: string,
+				 *	long: number,
+				 *	lat: number,
+				 *	sensor?: {}
+				 * }}
+				 */
+				var message = JSON.parse(messageObj.payloadString).d;
+				console.log(message)
+				var nodeId = message.node_id;
+				var baseNode = {
+					id: nodeId,
+					long: message.long,
+					lat: message.lat,
+					time: Date.now()
 				}
-				if (message['sensor']) {
-					updateTrackableAsset(message['node_id'], message['long'], message['lat'], Object.keys(message['sensor'])[0], message['sensor'][Object.keys(message['sensor'])[0]] ) // TODO, clean this up, it's hacky
+				if (!assets[nodeId]) {
+					trackableAssetNodeModule.initTrackableAsset(baseNode)
+				}
+				if (message.sensor) {
+					var sensorType = Object.keys(message.sensor)[0];
+					trackableAssetNodeModule.updateTrackableAsset({
+						...baseNode,
+						sensorType,
+						sensorVal: message.sensor[sensorType]
+					});
 				} else {
-					updateTrackableAsset(message['node_id'], message['long'], message['lat'])
+					trackableAssetNodeModule.updateTrackableAsset({
+						id: message['node_id'],
+						long: message['long'],
+						lat: message['lat'],
+						time: Date.now()
+					});
 				}
 			}
 		}
@@ -235,50 +253,268 @@ var nodes = {}
 var assets = {}
 var assetPoints = {}
 
-var initTrackableAsset = function(id, long, lat, time, type = undefined, val = undefined) {
-	console.log("initializing asset: " + id)
-	var node = {
-		marker: L.marker([long, lat]).addTo(mymap).bindPopup("<b>" + id +"</b>").openPopup(),
-		points: [ new L.LatLng(long, lat) ],
-		timestamps: [ time ]
-	}
-	if (type) {
-		var node1 = Object.assign ({
-			circle: L.circle([long, lat], val, {
+var trackableAssetNodeModule = (function () {
+	/**
+	 * @param {{
+	 * 	id: string,
+	 * 	long: string,
+	 * 	lat: string,
+	 * 	time: Date,
+	 * 	sensorType: string=,
+	 * 	sensorVal: string=
+	 * }} param0
+	 * @returns {{
+	 * 	marker: L.Marker,
+	 * 	points: L.LatLng[],
+	 * 	timestamps: Date[],
+	 * 	circle?: L.Circle
+	 * }}
+	 */
+	var createTrackableAssetNode = function({
+		id,
+		long,
+		lat,
+		time,
+		sensorType = undefined,
+		sensorVal = undefined
+	}) {
+		var trackableAssetNode = {
+			marker: L
+				.marker([long, lat])
+				.addTo(mymap)
+				.bindPopup("<b>" + id + "</b>")
+				.openPopup(),
+			points: [new L.LatLng(long, lat)],
+			timestamps: [time]
+		};
+		if (sensorType) {
+			var circleConfig = {
 				color: 'red',
 				fillColor: '#f03',
 				fillOpacity: 0.1
-			}).addTo(mymap).bindPopup("LoRA Node: " + id)
-		}, node)
-		assets[id] = node1
-		renderList()
-		return node1
-	} else {
-		assets[id] = node
-		renderList()
-		return node
+			};
+			trackableAssetNode.circle = {
+				circle: L
+					.circle([long, lat], sensorVal, circleConfig)
+					.addTo(mymap)
+					.bindPopup("LoRA Node: " + id)
+			};
+			return trackableAssetNode;
+		}
+		return trackableAssetNode;
 	}
-}
 
-var updateTrackableAsset = function (id, long, lat, time, type = undefined, val = undefined) {
-	console.log("updating asset: " + id)
-	if ( ! assets[id] ) {
-		console.log("asset doesn't exist, creating: " + id)
-		var asset = initTrackableAsset(id, long, lat, time, type, val)
-	} else {
-		console.log("loading asset: " + id)
-		var asset = assets[id]
+	/**
+	 * @param {{
+	 * 	id: string,
+	 * 	long: string,
+	 * 	lat: string,
+	 * 	time: Date,
+	 * 	sensorType: string=,
+	 * 	sensorVal: string=
+	 * }} opts 
+	 */
+	var initTrackableAsset = function(opts) {
+		console.log("initializing asset: " + opts.id);
+		const newTrackableAssetNode = createTrackableAssetNode();
+		assets[id] = newTrackableAssetNode;
+		renderList();
+		return newTrackableAssetNode;
 	}
-	var newLatLng = new L.LatLng(long, lat);
-	asset['marker'].setLatLng(newLatLng).update();
-	asset['points'].push(newLatLng)
-	asset['timestamps'].push(time)
-	if (asset['circle']) {
-			asset['circle'].setRadius( val )
-			asset['circle'].setLatLng( newLatLng )
+
+	/**
+	 * @param {string} id 
+	 * @returns {ReturnType<initTrackableAsset>}
+	 */
+	var getAssetByIdOrCreateNewOne = function(id) {
+		if (!assets[id]) {
+			console.log("asset doesn't exist, creating: " + id)
+			return initTrackableAsset(opts);
+		} else {
+			console.log("loading asset: " + id);
+			return assets[id];
+		}
 	}
-	console.log("asset location updated")
-}
+
+	/**
+	 * @param {{
+	 * 	id: string,
+	 * 	long: string,
+	 * 	lat: string,
+	 * 	time: Date,
+	 * 	sensorType: string=,
+	 * 	sensorVal: string=
+	 * }} opts 
+	 */
+	var updateTrackableAsset = function (opts) {
+		var {
+			id,
+			long,
+			lat,
+			time,
+			sensorVal = undefined
+		} = opts;
+		console.log("updating asset: " + id)
+		var asset = getAssetByIdOrCreateNewOne(id);
+		var newLatLng = new L.LatLng(long, lat);
+		asset.marker
+			.setLatLng(newLatLng)
+			.update();
+		asset.points.push(newLatLng);
+		asset.timestamps.push(time);
+		if (asset.circle) {
+			asset.circle.setRadius(sensorVal);
+			asset.circle.setLatLng(newLatLng);
+		}
+		console.log("asset location updated");
+	}
+	return {
+		initTrackableAsset,
+		updateTrackableAsset
+	}
+})();
+
+var formModule = (
+	function() {
+		const nodeIdElementId = 'nodeId';
+		const nodeLongitudeElementId = 'nodeLongitude';
+		const nodeLatitudeElementId = 'nodeLatitude';
+		const nodeSensorTypeElementId = 'nodeSensorType';
+		const nodeSensorValueElementId = 'nodeSensorValue';
+		var getInputValue = function($, elementId) {
+			const elementIdCssSelector = `#${elementId}`;
+			return $(elementIdCssSelector).val();
+		};
+		/**
+		 * @param {*} $ 
+		 * @param {"hideAddNodeForm" | "hideUpdateForm"} hideModalFnName 
+		 */
+		var updateTrackableAssetBasedOnForm = function($, hideModalFnName) {
+			trackableAssetNodeModule.updateTrackableAsset({
+				id: getInputValue($, nodeIdElementId),
+				lat: getInputValue($, nodeLatitudeElementId),
+				long: getInputValue($, nodeLongitudeElementId),
+				time: Date.now(),
+				sensorType: getInputValue($, nodeSensorTypeElementId),
+				sensorVal: getInputValue($, nodeSensorValueElementId)
+			});
+			modalModule[hideModalFnName]();
+			return false;
+		}
+
+		var lineBreaks = /\r?\n|\r/g;
+		/** @param {string} unparsedRow */
+		var parseRow = function(unparsedRow) {
+			return unparsedRow.replace(lineBreaks, " ").split(',');
+		};
+		var isLastIndexOfArray = function(arr, index) {
+			return index == (arr.length - 1);
+		}
+		var handleOnSubmitFileColumnsForm = function() {
+			var elementIds = {
+				nodeIdSelect: 'nodeIdSelect',
+				nodeLongitudeSelect: 'nodeLongitudeSelect',
+				nodeLatitudeSelect: 'nodeLatitudeSelect',
+				nodeTimeSelect: 'nodeTimeSelect',
+				timeView: "timeView"
+			};
+			var nodeIdSelect = document.getElementById(elementIds.nodeIdSelect);
+			var nodeLongitudeSelect = document.getElementById(elementIds.nodeLongitudeSelect);
+			var nodeLatitudeSelect = document.getElementById(elementIds.nodeLatitudeSelect);
+			var nodeTimeSelect = document.getElementById(elementIds.nodeTimeSelect);
+			modalModule.hideSelectColumnsForm();
+			for (i in rows) {
+				var row = parseRow(rows[i])
+				var selectedNodeId = row[nodeIdSelect.selectedIndex];
+				
+				/**
+				 * @type {{
+				 * 	points: number[][],
+				 * 	timestamps: Date[]
+				 * }}
+				 */
+				var registeredAsset = assets[selectedNodeId];
+				var selectedTimestamp = row[nodeTimeSelect.selectedIndex];
+				var selectedLatitude = row[nodeLatitudeSelect.selectedIndex];
+				var selectedLongitude = row[nodeLongitudeSelect.selectedIndex];
+				if (!registeredAsset) {
+					console.log("initializing new asset: " + selectedNodeId)
+					initTrackableAsset(
+						selectedNodeId,
+						selectedLatitude,
+						selectedLongitude,
+						selectedTimestamp
+					);
+				} else {
+					registeredAsset.points.push([selectedLatitude, selectedLongitude]);
+					registeredAsset.timestamps.push(selectedTimestamp);
+				}
+				if (isLastIndexOfArray(rows, i)) {
+					console.log("all rows imported");
+					var pointLens = [];
+					var assetKeys = Object.keys(assets);
+					console.log(assetKeys);
+					/**
+					 * @param {string} key 
+					 * @param {number} index 
+					 */
+					var setSliderMaxValue = function (key, index) {
+						/** @type {{ points: number[][] }} */
+						const selectedAsset = assets[key];
+						const selectedAssetCoordinatesLength =
+							selectedAsset.points.length;
+						pointLens.push(selectedAssetCoordinatesLength);
+						if (isLastIndexOfArray(assetKeys, index)) {
+							var maxLen = Math.max.apply(Math, pointLens);
+							slider.setAttribute("max", maxLen);
+						}
+					};
+					assetKeys.forEach(setSliderMaxValue);
+				}
+			}
+			var timeView  = document.getElementById(elementIds.timeView);
+			timeView.onload = function () {
+				timeView.innerHTML = (new Date()).toISOString()
+			}
+			slider.oninput = function() {
+				for (id in assets) {
+					/**
+					 * @type {{
+					 * 	points: number[][],
+					 * 	timestamps: Date[]
+					 * }}
+					 */
+					const selectedAsset = assets[id]
+					if (selectedAsset.points[this.value]) {
+						trackableAssetNodeModule.updateTrackableAsset({
+							id,
+							lat: selectedAsset.points[this.value][0],
+							long: selectedAsset.points[this.value][1],
+							time: new Date()
+						});
+					}
+					if (selectedAsset.timestamps[this.value]) {
+						document.getElementById(elementIds.timeView).innerHTML = selectedAsset.timestamps[this.value]
+					}
+				}
+			}
+		}
+
+		var handleOnSubmitAddNodeForm = function($) {
+			return updateTrackableAssetBasedOnForm($, "hideAddNodeForm");
+		}
+
+		var handleOnSubmitUpdateNodeForm = function($) {
+			return updateTrackableAssetBasedOnForm($, "hideUpdateForm");
+		};
+
+		return {
+			handleOnSubmitAddNodeForm,
+			handleOnSubmitUpdateNodeForm,
+			handleOnSubmitFileColumnsForm
+		};
+	}
+)();
 
 var genRandomNums = function() {
 	return [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)].join(',')
