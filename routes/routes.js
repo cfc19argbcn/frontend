@@ -11,15 +11,18 @@ const setApplicationJsonAsContentType = (res) =>
  */
 module.exports = (app, { mapValsFile, mqqtCredentials }) => {
   app.get("/", (_, res) => res.sendFile("index.html" , { root : __dirname}));
+  
   app.get("/mqtt_creds", (_, res) => {
     setApplicationJsonAsContentType(res);
     res.send(JSON.stringify(mqqtCredentials));
   });
   app.use(express.static(path.join(__dirname, "public")));
+  
   app.get("/animal_data", (_, res) => {
     setApplicationJsonAsContentType(res);
     res.send(JSON.stringify(animalDict(mapValsFile)));
   });
+
   app.get(`/${mapValsFile}`, (_, res) =>
     res.sendFile(mapValsFile , { root : __dirname}));
 };
