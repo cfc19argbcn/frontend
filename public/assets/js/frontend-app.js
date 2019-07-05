@@ -1,8 +1,43 @@
-var options = {
-  valueNames: [ 'name', 'city' ]
+var assets = {};
+var commonElementIds = {
+	files: "files",
+	mapId: "mapid",
+	timeSlider: "timeSlider",
+	timeView: "timeView"
 };
-
-var d = new Date();
+var rows;
+var sampleSensorData = [
+	{"d":{"sound":65,"timestamp":"2018-06-30T06:49:55.174Z"}},
+	{"d":{"sound":81,"timestamp":"2018-06-30T06:50:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T06:51:55.174Z"}},
+	{"d":{"sound":66,"timestamp":"2018-06-30T06:52:55.174Z"}},
+	{"d":{"sound":65,"timestamp":"2018-06-30T06:53:55.174Z"}},
+	{"d":{"sound":81,"timestamp":"2018-06-30T06:54:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T06:55:55.174Z"}},
+	{"d":{"sound":66,"timestamp":"2018-06-30T06:56:55.174Z"}},
+	{"d":{"sound":65,"timestamp":"2018-06-30T06:57:55.174Z"}},
+	{"d":{"sound":81,"timestamp":"2018-06-30T06:58:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T06:59:55.174Z"}},
+	{"d":{"sound":66,"timestamp":"2018-06-30T07:00:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:01:55.174Z"}},
+	{"d":{"sound":82,"timestamp":"2018-06-30T07:02:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:03:55.174Z"}},
+	{"d":{"sound":66,"timestamp":"2018-06-30T07:04:55.174Z"}},
+	{"d":{"sound":65,"timestamp":"2018-06-30T07:05:55.174Z"}},
+	{"d":{"sound":81,"timestamp":"2018-06-30T07:06:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:07:55.174Z"}},
+	{"d":{"sound":66,"timestamp":"2018-06-30T07:08:55.174Z"}},
+	{"d":{"sound":65,"timestamp":"2018-06-30T07:09:55.174Z"}},
+	{"d":{"sound":82,"timestamp":"2018-06-30T07:10:55.174Z"}},
+	{"d":{"sound":68,"timestamp":"2018-06-30T07:11:55.174Z"}},
+	{"d":{"sound":120,"timestamp":"2018-06-30T07:12:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:13:55.174Z"}},
+	{"d":{"sound":82,"timestamp":"2018-06-30T07:14:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:15:55.174Z"}},
+	{"d":{"sound":82,"timestamp":"2018-06-30T07:16:55.174Z"}},
+	{"d":{"sound":69,"timestamp":"2018-06-30T07:17:55.174Z"}},
+	{"d":{"sound":61,"timestamp":"2018-06-30T07:18:55.174Z"}}
+];
 
 var modalModule = (
 	function() {
@@ -11,6 +46,7 @@ var modalModule = (
 		var addNodeForm = "addNodeFormContainer";
 		var selectColumnsForm = "selectFileColumns";
 		var updateNodeForm = 'updateNodeFormContainer';
+		var nodeIdSelectElementId = 'listNodeIds';
 		/** @param {string} elementId */
 		var viewModal = function(elementId) {
 			console.log("Showing modal: " + elementId);
@@ -20,6 +56,18 @@ var modalModule = (
 		var hideModal = function(elementId) {
 			console.log("Hiding modal: " + elementId);
 			document.getElementById(elementId).style.display = elementNotVisibleDisplay;
+		};
+		var populateAssetOptions = function() {
+			document.getElementById(nodeIdSelectElementId).options.length = 0;
+			Object.keys(assets).map(assetKey => {
+				console.log(assetKey)
+				var assetKeyOption = document.createElement("option");
+				assetKeyOption.text = assetKey;
+				assetKeyOption.value = assetKey;
+				document.getElementById(nodeIdSelectElementId)
+					.options
+					.add(assetKeyOption);
+			});
 		};
 		var hideAddNodeForm = function() {
 			hideModal(addNodeForm);
@@ -37,7 +85,8 @@ var modalModule = (
 			hideModal(updateNodeForm);
 		};
 		var showUpdateForm = function() {
-			viewModal(updateNodeForm);			
+			viewModal(updateNodeForm);
+			populateAssetOptions();
 		};
 		return {
 			hideAddNodeForm,
@@ -50,48 +99,49 @@ var modalModule = (
 	}
 )();
 
-var headers
-var rows;
-var polylines = []
+var assetPathsModule = (function() {
+	var removeAssetPaths = function () {
+		Object.keys(assets).map((asset) => {
+			removeAssetPath(asset)
+		});
+	}
 
-var populateAssetOptions = function() {
-	document.getElementById('listNodeIds').options.length = 0
-	Object.keys(assets).map(asset => {
-		console.log(asset)
-		var opt = document.createElement("option")
-		opt.text = asset
-		opt.value = asset
-		document.getElementById('listNodeIds').options.add(opt)
-	})
-}
+	var removeAssetPath = function (id) {
+		mymap.removeLayer(trackableAssetNodeModule.getAssetByKey(id).path)
+	}
 
-var removeAssetPaths = function ( id ) {
-	Object.keys(assets).map( (asset) => {
-		removeAssetPath(asset)
-	})
-}
+	var genRandomNums = function() {
+		return [
+			Math.floor(Math.random() * 255),
+			Math.floor(Math.random() * 255),
+			Math.floor(Math.random() * 255)
+		].join(',')
+	}
 
-var removeAssetPath = function ( id ) {
-	mymap.removeLayer(assets[id]['path'])
-}
+	var drawAssetPath = function(id) {
+		var asset = trackableAssetNodeModule.getAssetByKey(id);
+		asset.path = new L.Polyline(asset.points, {
+				color: "rgb(" + genRandomNums() + ")",
+				weight: 1,
+				opacity: 0.8,
+				smoothFactor: 0
+		});
+		asset.path.addTo(mymap);
+	}
 
-var drawAssetPath = function( id ) {
-	assets[id]['path'] = new L.Polyline( assets[id]['points'], {
-			color: "rgb(" + genRandomNums() + ")",
-			weight: 1,
-			opacity: 0.8,
-			smoothFactor: 0
-	})
-	assets[id]['path'].addTo(mymap);
-}
+	var drawAssetPaths = function() {
+		Object.keys(assets).map((asset) => {
+			drawAssetPath(asset)
+		})
+	};
 
-var drawAssetPaths = function() {
-	Object.keys(assets).map( (asset, asset_idx) => {
-		drawAssetPath(asset)
-	})
-}
-
+	return {
+		drawAssetPaths,
+		removeAssetPaths
+	};
+})();
 function handleFileSelect(evt) {
+	var headers;
 	var files = evt.target.files;
 	for (var i = 0, f; f = files[i]; i++) {
 		console.log(evt)
@@ -121,139 +171,146 @@ function handleFileSelect(evt) {
 		});
 	}
 }
-function createOptionsList(headers) {
-	var options = []
-	for (var i = 0; i < headers.length; i++) {
-		console.log("appending header: " + headers )
-		var option = document.createElement("option");
-		option.text = headers[i]
-		option.value = headers[i]
-		if (option.text) {
-			options.push(option)
-		}
-	}
-	if (options.length == headers.length) {
-		return options
-	}
-}
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
-var renderList = function() {
-	var nodeList = document.getElementById("nodeList");
-	nodeList.innerHTML = null
-	var assetKeys = Object.keys(assets)
-	for (idx in assetKeys) {
-		nodeList.innerHTML += `
-			<div class="nodeCard">
-		     <h2>
-	         ${assetKeys[idx]}
-		     </h2>
-		     <p >Location: ${assets[assetKeys[idx]]['points'].slice(-1)[0]}</p>
-				 <p >Last Update: ${assets[assetKeys[idx]]['timestamps'].slice(-1)[0]}</p>
-		  </div>
-		`
-	}
-}
-function loadJSON(callback) {
-	var xobj = new XMLHttpRequest();
-	xobj.overrideMimeType("application/json");
-	xobj.open('GET', '/mqtt_creds', true);
-	xobj.onreadystatechange = function () {
-		if (xobj.readyState == 4 && xobj.status == "200") {
-			callback(xobj.responseText);
-		}
-	};
-	xobj.send(null);
-}
-var animal_data
-loadJSON(function(response) {
-  console.log("Loading MQTT credentials")
-  initMQTTClient(JSON.parse(response))
-})
+document.getElementById(commonElementIds.files)
+	.addEventListener(
+		'change',
+		handleFileSelect,
+		false
+	);
 
-var initMQTTClient = function(mqttCreds) {
-	var watson_channel = 'iot-2/type/' + mqttCreds.IOT_DEVICE_TYPE + '/id/' + mqttCreds.IOT_DEVICE_ID + '/evt/'+  mqttCreds.IOT_EVENT_TYPE + '/fmt/json'
-	var cleanSession = true;
-	var subscribeOptions = {
-		onSuccess: function() {
-			console.log("subscription set")
-			mqttClient.onMessageArrived = function (messageObj) {
-				/**
-				 * @type {{
-				 *	node_id: string,
-				 *	long: number,
-				 *	lat: number,
-				 *	sensor?: {}
-				 * }}
-				 */
-				var message = JSON.parse(messageObj.payloadString).d;
-				console.log(message)
-				var nodeId = message.node_id;
-				var baseNode = {
-					id: nodeId,
-					long: message.long,
-					lat: message.lat,
-					time: Date.now()
-				}
-				if (!assets[nodeId]) {
-					trackableAssetNodeModule.initTrackableAsset(baseNode)
-				}
-				if (message.sensor) {
-					var sensorType = Object.keys(message.sensor)[0];
-					trackableAssetNodeModule.updateTrackableAsset({
-						...baseNode,
-						sensorType,
-						sensorVal: message.sensor[sensorType]
-					});
-				} else {
-					trackableAssetNodeModule.updateTrackableAsset({
-						id: message['node_id'],
-						long: message['long'],
-						lat: message['lat'],
-						time: Date.now()
-					});
-				}
+var qmsModule = (function() {
+	function loadJSON(callback) {
+		var xobj = new XMLHttpRequest();
+		xobj.overrideMimeType("application/json");
+		xobj.open('GET', '/mqtt_creds', true);
+		xobj.onreadystatechange = function () {
+			if (xobj.readyState == 4 && xobj.status == "200") {
+				callback(xobj.responseText);
+			}
+		};
+		xobj.send(null);
+	}
+
+	var qmsMessageArrivedHandler = function (messageObj) {
+		/**
+		 * @type {{
+		 *	node_id: string,
+		*	long: number,
+		*	lat: number,
+		*	sensor?: {}
+		* }}
+		*/
+		var message = JSON.parse(messageObj.payloadString).d;
+		console.log(message)
+		var nodeId = message.node_id;
+		var baseNode = {
+			id: nodeId,
+			long: message.long,
+			lat: message.lat,
+			time: Date.now()
+		}
+		if (!trackableAssetNodeModule.getAssetByKey(nodeId)) {
+			trackableAssetNodeModule.initTrackableAsset(baseNode)
+		} else if (message.sensor) {
+			var sensorType = Object.keys(message.sensor)[0];
+			trackableAssetNodeModule.updateTrackableAsset({
+				...baseNode,
+				sensorType,
+				sensorVal: message.sensor[sensorType]
+			});
+		} else {
+			trackableAssetNodeModule.updateTrackableAsset(baseNode);
+		}
+	}		
+
+	var initMQTTClient = function(mqttCreds) {
+		var watson_channel = 'iot-2/type/' + mqttCreds.IOT_DEVICE_TYPE + '/id/' + mqttCreds.IOT_DEVICE_ID + '/evt/'+  mqttCreds.IOT_EVENT_TYPE + '/fmt/json'
+		var cleanSession = true;
+		var subscribeOptions = {
+			onSuccess: function() {
+				console.log("subscription set")
+				mqttClient.onMessageArrived = qmsMessageArrivedHandler;
 			}
 		}
-	}
 
-	var options = {
-    timeout: 40,
-    cleanSession: cleanSession,
-    useSSL: false,
-    userName: mqttCreds.IOT_API_KEY,
-    password: mqttCreds.IOT_AUTH_TOKEN,
-		onSuccess: function () {
-			console.log("mqtt client connected")
-			mqttClient.subscribe( watson_channel, subscribeOptions )
-		},
-		onFailure: function (err) {
-			console.log("mqtt client failed to connect")
-			console.log(options)
-			console.log(err)
+		var options = {
+			timeout: 40,
+			cleanSession: cleanSession,
+			useSSL: false,
+			userName: mqttCreds.IOT_API_KEY,
+			password: mqttCreds.IOT_AUTH_TOKEN,
+			onSuccess: function () {
+				console.log("mqtt client connected")
+				mqttClient.subscribe(watson_channel, subscribeOptions)
+			},
+			onFailure: function (err) {
+				console.log("mqtt client failed to connect")
+				console.log(options)
+				console.log(err)
+			}
 		}
+		var mqtt_host = mqttCreds.IOT_ORG_ID + '.messaging.internetofthings.ibmcloud.com'
+		var mqtt_port = 1883
+		var mqttClient = new Messaging.Client(mqtt_host, mqtt_port, "a:" + mqttCreds.IOT_ORG_ID + ":" + "client" + parseInt(Math.random() * 100, 10));
+		mqttClient.connect(options)
 	}
-	var mqtt_host = mqttCreds.IOT_ORG_ID + '.messaging.internetofthings.ibmcloud.com'
-	var mqtt_port = 1883
-	var mqttClient = new Messaging.Client(mqtt_host, mqtt_port, "a:" + mqttCreds.IOT_ORG_ID + ":" + "client" + parseInt(Math.random() * 100, 10));
-	mqttClient.connect(options)
-}
-var loadData = function() { }
-var mymap = L.map("mapid").setView([34.000037, -118.317471], 100);
-L.esri.basemapLayer("Topographic").addTo(mymap);
+	return {
+		initMQTTClient,
+		loadJSON
+	};
+})();
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-	maxZoom: 100,
-	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-		'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-		'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-	id: 'mapbox.streets'
-}).addTo(mymap);
+qmsModule.loadJSON(function(response) {
+  console.log("Loading MQTT credentials")
+  qmsModule.initMQTTClient(JSON.parse(response))
+});
 
-var nodes = {}
-var assets = {}
-var assetPoints = {}
+var mymap = (function() {
+	var leafletMap = L.map(commonElementIds.mapId).setView([34.000037, -118.317471], 100);
+	L.esri.basemapLayer("Topographic").addTo(leafletMap);
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 100,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(leafletMap);
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("You clicked the map at " + e.latlng.toString())
+			.openOn(leafletMap);
+	}
+
+	leafletMap.on('click', onMapClick);
+
+	return leafletMap;
+})();
 
 var trackableAssetNodeModule = (function () {
+
+	var renderList = function() {
+		var nodeList = document.getElementById("nodeList");
+		nodeList.innerHTML = null
+		var assetKeys = Object.keys(assets)
+		assetKeys.forEach(assetKey => {
+			var selectedAsset = getAssetByKey(assetKey);
+			nodeList.innerHTML += `
+				<div class="nodeCard">
+					<h2>
+						${assetKey}
+					</h2>
+					<p >Location: ${selectedAsset.points.slice(-1)[0]}</p>
+					<p >Last Update: ${selectedAsset.timestamps.slice(-1)[0]}</p>
+				</div>
+			`
+		});
+	}
+
 	/**
 	 * @param {{
 	 * 	id: string,
@@ -284,7 +341,7 @@ var trackableAssetNodeModule = (function () {
 				.addTo(mymap)
 				.bindPopup("<b>" + id + "</b>")
 				.openPopup(),
-			points: [new L.LatLng(long, lat)],
+			points: [new L.LatLng(lat, long)],
 			timestamps: [time]
 		};
 		if (sensorType) {
@@ -293,12 +350,11 @@ var trackableAssetNodeModule = (function () {
 				fillColor: '#f03',
 				fillOpacity: 0.1
 			};
-			trackableAssetNode.circle = {
-				circle: L
+			trackableAssetNode.circle = L
 					.circle([long, lat], sensorVal, circleConfig)
 					.addTo(mymap)
-					.bindPopup("LoRA Node: " + id)
-			};
+					.bindPopup("LoRA Node: " + id);
+
 			return trackableAssetNode;
 		}
 		return trackableAssetNode;
@@ -315,24 +371,28 @@ var trackableAssetNodeModule = (function () {
 	 * }} opts 
 	 */
 	var initTrackableAsset = function(opts) {
-		console.log("initializing asset: " + opts.id);
-		const newTrackableAssetNode = createTrackableAssetNode();
+		const {id} = opts;
+		console.log("initializing asset: " + id);
+		const newTrackableAssetNode = createTrackableAssetNode(opts);
 		assets[id] = newTrackableAssetNode;
 		renderList();
 		return newTrackableAssetNode;
 	}
 
 	/**
-	 * @param {string} id 
+	 * @param {{
+	 * 	id: string
+	 * }} opts 
 	 * @returns {ReturnType<initTrackableAsset>}
 	 */
-	var getAssetByIdOrCreateNewOne = function(id) {
-		if (!assets[id]) {
+	var getAssetByIdOrCreateNewOne = function(opts) {
+		var {id} = opts;
+		if (!getAssetByKey(id)) {
 			console.log("asset doesn't exist, creating: " + id)
 			return initTrackableAsset(opts);
 		} else {
 			console.log("loading asset: " + id);
-			return assets[id];
+			return getAssetByKey(id);
 		}
 	}
 
@@ -355,8 +415,8 @@ var trackableAssetNodeModule = (function () {
 			sensorVal = undefined
 		} = opts;
 		console.log("updating asset: " + id)
-		var asset = getAssetByIdOrCreateNewOne(id);
-		var newLatLng = new L.LatLng(long, lat);
+		var asset = getAssetByIdOrCreateNewOne(opts);
+		var newLatLng = new L.LatLng(lat, long);
 		asset.marker
 			.setLatLng(newLatLng)
 			.update();
@@ -368,7 +428,17 @@ var trackableAssetNodeModule = (function () {
 		}
 		console.log("asset location updated");
 	}
+
+	/**
+	 * @param {string} assetKey 
+	 * @returns {ReturnType<getAssetByIdOrCreateNewOne>}
+	 */
+	var getAssetByKey = function (assetKey) {
+		return assets[assetKey];
+	}
+
 	return {
+		getAssetByKey,
 		initTrackableAsset,
 		updateTrackableAsset
 	}
@@ -433,7 +503,8 @@ var formModule = (
 				 * 	timestamps: Date[]
 				 * }}
 				 */
-				var registeredAsset = assets[selectedNodeId];
+				var registeredAsset = trackableAssetNodeModule
+					.getAssetByKey(selectedNodeId);
 				var selectedTimestamp = row[nodeTimeSelect.selectedIndex];
 				var selectedLatitude = row[nodeLatitudeSelect.selectedIndex];
 				var selectedLongitude = row[nodeLongitudeSelect.selectedIndex];
@@ -458,15 +529,16 @@ var formModule = (
 					 * @param {string} key 
 					 * @param {number} index 
 					 */
-					var setSliderMaxValue = function (key, index) {
+					var setSliderMaxValue = function (assetKey, index) {
 						/** @type {{ points: number[][] }} */
-						const selectedAsset = assets[key];
+						const selectedAsset = trackableAssetNodeModule
+							.getAssetByKey(assetKey);
 						const selectedAssetCoordinatesLength =
 							selectedAsset.points.length;
 						pointLens.push(selectedAssetCoordinatesLength);
 						if (isLastIndexOfArray(assetKeys, index)) {
 							var maxLen = Math.max.apply(Math, pointLens);
-							slider.setAttribute("max", maxLen);
+							setSliderMaxAttribute(maxLen);
 						}
 					};
 					assetKeys.forEach(setSliderMaxValue);
@@ -478,13 +550,7 @@ var formModule = (
 			}
 			slider.oninput = function() {
 				for (id in assets) {
-					/**
-					 * @type {{
-					 * 	points: number[][],
-					 * 	timestamps: Date[]
-					 * }}
-					 */
-					const selectedAsset = assets[id]
+					const selectedAsset = trackableAssetNodeModule.getAssetByKey(id);
 					if (selectedAsset.points[this.value]) {
 						trackableAssetNodeModule.updateTrackableAsset({
 							id,
@@ -516,87 +582,28 @@ var formModule = (
 	}
 )();
 
-var genRandomNums = function() {
-	return [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)].join(',')
-}
+var {setSliderMaxAttribute, slider} = (function() {
+	const timeSlider = document.getElementById(commonElementIds.timeSlider);
 
-function drawAnimalPaths( ) {
-	slider.oninput = function() {
-		for (id in assets) {
-			console.log(id)
-			console.log(this.value)
-			if (assets[id]['points'][this.value]) {
-				assets[id]['marker'].setLatLng( assets[id]['points'][this.value] ).update();
-				console.log("updating " +  id + " to " + assets[id]['points'][this.value].toString())
-			}
-		}
+	timeSlider.oninput = function() {
+		Object.keys(assets)
+			.map((assetKey) => {
+				const selectedAsset = trackableAssetNodeModule.getAssetByKey(assetKey);
+				if (selectedAsset.points[this.value]) {
+					selectedAsset.marker.setLatLng(selectedAsset.points[this.value]).update();
+					console.log("updating " +  assetKey + " to " + selectedAsset.points[this.value].toString())
+				}
+			})
+		document.getElementById(commonElementIds.timeView).innerHTML =
+			trackableAssetNodeModule.getAssetByKey(assetKey).timestamps[this.value];
 	}
-
-	for (id in animal_data) {
-		initTrackableAsset(animal_data[id][0]['location-lat'], animal_data[id][0]['location-long'], id)
-		animal_data[id].map( (row, row_idx) => {
-			var newLatLng = [ animal_data[id][row_idx]['location-lat'], animal_data[id][row_idx]['location-long'] ]
-			assets[id]['points'].push(newLatLng)
-			if (row_idx == Object.keys(row).length ) {
-				console.log("added all points, draw line")
-				drawAssetPath(id)
-			}
-		})
+	var setSliderMaxAttribute = function(maxValue) {
+		timeSlider.setAttribute("max", maxValue);
 	}
-}
+	setSliderMaxAttribute(sampleSensorData.length - 1);
 
-var popup = L.popup();
-
-function onMapClick(e) {
-	popup
-		.setLatLng(e.latlng)
-		.setContent("You clicked the map at " + e.latlng.toString())
-		.openOn(mymap);
-}
-
-mymap.on('click', onMapClick);
-
-var slider = document.getElementById("timeSlider");
-
-slider.oninput = function() {
-	Object.keys(assets).map( (id, idx) => {
-		if (assets[id]['points'][this.value]) {
-			assets[id]['marker'].setLatLng( assets[id]['points'][this.value] ).update();
-			console.log("updating " +  id + " to " + assets[id]['points'][this.value].toString())
-		}
-	})
-	document.getElementById("timeView").innerHTML = assets[id]['timestamps'][this.value]
-}
-var sampleSensorData = [
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:49:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:50:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:51:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T06:52:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:53:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:54:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:55:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T06:56:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:57:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:58:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:59:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:00:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:01:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:02:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:03:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:04:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T07:05:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T07:06:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:07:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:08:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T07:09:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:10:55.174Z"}},
-	{"d":{"sound":68,"timestamp":"2018-06-30T07:11:55.174Z"}},
-	{"d":{"sound":120,"timestamp":"2018-06-30T07:12:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:13:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:14:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:15:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:16:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:17:55.174Z"}},
-	{"d":{"sound":61,"timestamp":"2018-06-30T07:18:55.174Z"}}
-]
-slider.setAttribute("max", sampleSensorData.length - 1)
+	return {
+		slider: timeSlider,
+		setSliderMaxAttribute
+	};
+})();

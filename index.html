@@ -21,16 +21,16 @@
 			<button style="float:right" onclick="document.getElementById('files').click()">Import CSV File</button>
 			<input type="file" id="files" name="files[]" multiple style="display:none" />
 			<button type="button" id="updateAsset" style="float:right"
-				onclick="modalModule.showUpdateForm();populateAssetOptions();"
+				onclick="modalModule.showUpdateForm();"
 			>
 				Update Node
 			</button>
 			<button type="button" id="addAsset" style="float:right"
 				onclick="modalModule.showAddNodeForm()">Add Node</button>
-			<button type="button" style="float:left" onclick="removeAssetPaths()">
+			<button type="button" style="float:left" onclick="assetPathsModule.removeAssetPaths()">
 				Hide asset paths
 			</button>
-			<button type="button" style="float:left" onclick="drawAssetPaths()">
+			<button type="button" style="float:left" onclick="assetPathsModule.drawAssetPaths()">
 				Show asset paths
 			</button>
 		</div>
