@@ -23,7 +23,7 @@
     "restify-clients": "^2.6.6",
     "restify-errors": "^3.1.0",
     "restify-plugins": "^1.6.0",
-    "dotenv": "8.0.0",
+    "dotenv": "8.0.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.4.4",

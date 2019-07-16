@@ -1,0 +1,31 @@
+var server = {
+  name: "assessment-nodejs",
+  protocol: "http://",
+  hostname: "localhost",
+  version: "0.0.1",
+  env: process.env.NODE_ENV || "development",
+  port: process.env.PORT || 8082
+};
+
+var database = {
+  uri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/auth",
+  test: {
+    uri: "mongodb://127.0.0.1:27017/test",
+    client: "http://localhost:8082/"
+  }
+};
+
+var jwt = {
+  secret: "1tokeN&%$aXADsecret"
+};
+
+var resources = {
+  host: "www.mocky.io",
+  policies: "/v2/580891a4100000e8242b75c5",
+  clients: "/v2/5808862710000087232b75ac"
+};
+
+module.exports.server = server;
+module.exports.resources = resources;
+module.exports.jwt = jwt;
+module.exports.database = database;

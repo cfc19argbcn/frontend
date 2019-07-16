@@ -40,16 +40,23 @@ server.get("/", function root(req, res, next) {
 server.post("/login", authentication.userAuth);
 server.get("/user/:id", authentication.verifyToken, users.getUserById);
 server.get("/user/name/:name", authentication.verifyToken, users.getUserByName);
+
 server.get(
   "/policies/:name",
   authentication.verifyToken,
   policies.getPoliciesByUser
 );
+
 server.get(
   "/policies/:number/user",
   authentication.verifyToken,
   policies.getUserByPolicyNumber
 );
+
+server.get(/\/public\/?.*/, restify.serveStatic({
+  directory: __dirname,
+  default: 'index.html'
+}));
 
 server.listen(config.server.port, function() {
   const url = config.server.protocol + config.server.hostname + ":" + config.server.port + "/";
