@@ -27,7 +27,7 @@ server.use(restify.plugins.jsonp());
 
 server.get("/", function root(req, res, next) {
   var routes = [
-    "POST     /login",
+    "POST     /api/login",
     "POST     /api/user",
     "GET      /api/user/:id",
     "POST     /api/devices",
