@@ -1,20 +1,31 @@
-var bunyan = require('bunyan');
+var request = require("../utils/request");
+var cfg = require("../config");
 
-var request = require('../utils/request');
-var cfg = require('../config');
-var log = bunyan.createLogger({name: "users"});
+var getUserById = function(req, res, next) {
+  if (["admin", "user"].indexOf(req.userRole) < 0)
+    return res.send({ message: "You do not have permission" });
+  var resource = request.options(cfg.resources.host, cfg.resources.clients);
+  request.req(resource, (status, result) => {
+    var _id = req.params.id;
+    var client = result["clients"].find(c => c.id === _id);
+    res.send(200, client || {});
+  });
+  next();
+};
 
-var getUserById = function(req, res, next){
-  if (['admin', 'user'].indexOf(req.userRole) >= 0) return res.send({ message: 'Failed to authenticate token.' });
+var getUserByName = function(req, res, next) {
+  if (["admin", "user"].indexOf(req.userRole) < 0)
+    return res.send({ message: "You do not have permission" });
+  var resource = request.options(cfg.resources.host, cfg.resources.clients);
+  request.req(resource, (status, result) => {
+    var name = req.params.name;
+    var client = result["clients"].find(
+      c => c.name.toLowerCase() === name.toLowerCase()
+    );
+    res.send(200, client || {});
+  });
+  next();
+};
 
-	next();
-}
-
-var getUserByName = function(req, res, next){
-  if (['admin', 'user'].indexOf(req.userRole) >= 0) return res.send({ message: 'Failed to authenticate token.' });
-
-  next(); 
-}
-
-module.exports.getUserById = getUserById
-module.exports.getUserByName = getUserByName
+module.exports.getUserById = getUserById;
+module.exports.getUserByName = getUserByName;
