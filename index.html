@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Quick Start - Leaflet</title>
+		<title>I'm lost</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
@@ -21,16 +21,16 @@
 			<button style="float:right" onclick="document.getElementById('files').click()">Import CSV File</button>
 			<input type="file" id="files" name="files[]" multiple style="display:none" />
 			<button type="button" id="updateAsset" style="float:right"
-				onclick="viewModal('updateNodeFormContainer') ; populateAssetOptions()"
+				onclick="modalModule.showUpdateForm();"
 			>
 				Update Node
 			</button>
 			<button type="button" id="addAsset" style="float:right"
-				onclick="viewModal('addNodeFormContainer')">Add Node</button>
-			<button type="button" style="float:left" onclick="removeAssetPaths()">
+				onclick="modalModule.showAddNodeForm()">Add Node</button>
+			<button type="button" style="float:left" onclick="assetPathsModule.removeAssetPaths()">
 				Hide asset paths
 			</button>
-			<button type="button" style="float:left" onclick="drawAssetPaths()">
+			<button type="button" style="float:left" onclick="assetPathsModule.drawAssetPaths()">
 				Show asset paths
 			</button>
 		</div>
@@ -70,11 +70,12 @@
 				<input id="nodeSensorValue" type="text" name="latitude" placeholder="42">
 				<br>
 				<br>
-				<button type="button"
-					onclick="updateTrackableAsset( $('#nodeId').val(), $('#nodeLongitude').val(), $('#nodeLatitude').val(), Date.now(), $('#nodeSensorType').val(), $('#nodeSensorValue').val() ) ; hideModal('addNodeFormContainer')  ; return false" >
+				<button type="button" onclick="formModule.handleOnSubmitAddNodeForm($)">
 					Create
 				</button>
-				<button type="button" onclick="hideModal('addNodeFormContainer')" >Cancel</button>
+				<button type="button" onclick="modalModule.hideAddNodeForm()" >
+					Cancel
+				</button>
 			</form>
 		</div>
 		<div id="updateNodeFormContainer" style="display:none" class="modal">
@@ -96,11 +97,10 @@
 				<br>
 				<input id="nodeLatitude" type="text" name="latitude" placeholder="-12.3456">
 				<br>
-				<button type="button"
-					onclick="updateTrackableAsset( $('#nodeId').val(), $('#nodeLongitude').val(), $('#nodeLatitude').val(), $('#nodeSensorType').val(), $('#nodeSensorValue').val() ) ; hideModal('updateNodeFormContainer')  ; return false" >
+				<button type="button" onclick="formModule.handleOnSubmitUpdateNodeForm($)">
 					Update
 				</button>
-				<button type="button" onclick="hideModal('updateNodeFormContainer')" >Cancel</button>
+				<button type="button" onclick="modalModule.hideUpdateForm()" >Cancel</button>
 			</form>
 		</div>
 		<div>
@@ -127,8 +127,8 @@
 				<br>
 				<select class="styled-select slate" id="nodeTimeSelect" type="text" name="time">
 				</select>
-				<button type="button" onclick="submitFileColumnsForm()">Submit</button>
-				<button type="button" onclick="hideModal('selectFileColumns')">Cancel</button>
+				<button type="button" onclick="formModule.handleOnSubmitFileColumnsForm()">Submit</button>
+				<button type="button" onclick="modalModule.hideSelectColumnsForm()">Cancel</button>
 			</form>
 		</div>
 		</br>
