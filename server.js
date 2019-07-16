@@ -3,9 +3,10 @@ var bunyan = require("bunyan");
 var mongoose = require("mongoose");
 
 var config = require("./config");
-var policies = require("./routes/policies");
-var authentication = require("./routes/authentication");
+
 var users = require("./routes/users");
+var devices = require("./routes/devices");
+var authentication = require("./routes/authentication");
 
 var log = bunyan.createLogger({ name: "server" });
 var server = restify.createServer();
@@ -26,11 +27,12 @@ server.use(restify.plugins.jsonp());
 
 server.get("/", function root(req, res, next) {
   var routes = [
-    "POST    /login",
-    "GET     /user/:id",
-    "GET     /user/name/:name",
-    "GET     /policies/:name",
-    "GET     /policies/:number/user"
+    "POST     /login",
+    "POST     /api/user",
+    "GET      /api/user/:id",
+    "POST     /api/devices",
+    "GET      /api/devices/:id",
+    "GET      /api/mqtt_creds"
   ];
   log.info("/", routes);
   res.send(200, routes);
@@ -38,20 +40,16 @@ server.get("/", function root(req, res, next) {
 });
 
 server.post("/login", authentication.userAuth);
-server.get("/user/:id", authentication.verifyToken, users.getUserById);
-server.get("/user/name/:name", authentication.verifyToken, users.getUserByName);
 
-server.get(
-  "/policies/:name",
-  authentication.verifyToken,
-  policies.getPoliciesByUser
-);
+server.post("/api/user", authentication.verifyToken, users.createUser);
+server.get("/api/user/:id", authentication.verifyToken, users.getUserById);
 
-server.get(
-  "/policies/:number/user",
-  authentication.verifyToken,
-  policies.getUserByPolicyNumber
-);
+server.post("/api/devices", authentication.verifyToken, devices.createDevices);
+server.get("/api/devices/:id", authentication.verifyToken, devices.getDeviceById);
+
+server.get("/api/mqtt_creds", authentication.verifyToken, devices.getMqttCreds);
+// server.get("/api/animal_data", authentication.verifyToken, devices.getMqttCreds);
+// server.get("/api/map_vals.json", authentication.verifyToken, devices.getMqttCreds);
 
 server.get(/\/public\/?.*/, restify.serveStatic({
   directory: __dirname,

@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const animalDict = require("./map-vals-read");
+const animalDict = require("./utils/map-vals-read");
 /** @param {import("express").Response} res */
 const setApplicationJsonAsContentType = (res) =>
   res.setHeader("Content-Type", "application/json");
