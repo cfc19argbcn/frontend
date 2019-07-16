@@ -33,7 +33,7 @@ const parseIntFromConfig = (configValue) => {
 } 
 
 var mqtt = {
-  port: process.env.PORT ? parseIntFromConfig(process.env.PORT) : defaultConfigs.port,
+  port: process.env.PORT,
   mapValsFile: "map_vals.json",
   mqqtCredentials: {
     IOT_DEVICE_ID: process.env.IOT_DEVICE_ID,

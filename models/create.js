@@ -10,22 +10,18 @@ var users = require("./users.json");
 var devices = require("./devices.json");
 
 
-var createManyDevices = function() {
-  mongoose.connect(config.database.uri, { useNewUrlParser: true });
-  Devices.insertMany(devices, function(error, docs) {
-    if (error) console.error(error);
-    mongoose.disconnect();
-  });
-};
-
-var createManyUsers = function() {
+var createModels = function() {
   mongoose.connect(config.database.uri, { useNewUrlParser: true });
   User.insertMany(users, function(error, docs) {
     if (error) console.error(error);
-    mongoose.disconnect();
+    console.log('Users', docs)
+    Devices.insertMany(devices, function(error, docs) {
+      if (error) console.error(error);
+      console.log('Devices', docs)
+      mongoose.disconnect();
+    });
   });
 };
 
 
-createManyDevices();
-createManyUsers();
+createModels();
