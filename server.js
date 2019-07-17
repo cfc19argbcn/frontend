@@ -39,17 +39,12 @@ server.get("/", function root(req, res, next) {
   next();
 });
 
-server.post("/login", authentication.userAuth);
-
+server.post("/api/login", authentication.userAuth);
 server.post("/api/user", authentication.verifyToken, users.createUser);
 server.get("/api/user/:id", authentication.verifyToken, users.getUserById);
-
 server.post("/api/devices", authentication.verifyToken, devices.createDevices);
 server.get("/api/devices/:id", authentication.verifyToken, devices.getDeviceById);
-
 server.get("/api/mqtt_creds", authentication.verifyToken, devices.getMqttCreds);
-// server.get("/api/animal_data", authentication.verifyToken, devices.getMqttCreds);
-// server.get("/api/map_vals.json", authentication.verifyToken, devices.getMqttCreds);
 
 server.get(/\/public\/?.*/, restify.serveStatic({
   directory: __dirname,
