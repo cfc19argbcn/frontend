@@ -21,7 +21,7 @@ var sensorsModule = (
     var register = function(event) {
       event.preventDefault();
       var formValues = getFormValues();
-      httpModule.callToRestAPI("/api/sensor", formValues);
+      httpModule.callToRestAPI("/api/devices", formValues);
     };
 
     return {
