@@ -34,7 +34,9 @@ var usersModule = (
       event.preventDefault();
       if (equalsPasswords()) {
         var formValues = getRegisterFormValues();
-        httpModule.callToRestAPI("/api/user", formValues);
+        httpModule.callToRestAPI("/api/user", formValues,function(response){
+          console.log(response);
+        });
       } else {
         var pswAlert = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
           '<strong>Oops!</strong> The password should match.' +
@@ -49,7 +51,9 @@ var usersModule = (
     var login = function(event) {
       event.preventDefault();
       var formValues = getLoginFormValues();
-      httpModule.callToRestAPI("/api/login", formValues);
+      httpModule.callToRestAPI("/api/login", formValues, function(response){
+        localStorage.setItem('token', response['token']);
+      });
     }
 
     return {

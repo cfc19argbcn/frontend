@@ -182,7 +182,7 @@ var qmsModule = (function() {
 	function loadJSON(callback) {
 		var xobj = new XMLHttpRequest();
 		xobj.overrideMimeType("application/json");
-		xobj.open('GET', '/mqtt_creds', true);
+		xobj.open('GET', '/api/mqtt_creds', true);
 		xobj.onreadystatechange = function () {
 			if (xobj.readyState == 4 && xobj.status == "200") {
 				callback(xobj.responseText);
