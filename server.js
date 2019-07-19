@@ -46,9 +46,6 @@ server.post("/api/devices", authentication.verifyToken, devices.createDevices);
 server.get("/api/devices/:id", authentication.verifyToken, devices.getDeviceById);
 server.get("/api/mqtt_creds", authentication.verifyToken, devices.getMqttCreds);
 
-app.get("/users", (_, res) => res.sendFile("public/html/users/index.html" , { root : __dirname}));
-app.get("/login", (_, res) => res.sendFile("public/html/users/login/index.html" , { root : __dirname}));
-app.get("/sensors", (_, res) => res.sendFile("public/html/sensors/index.html" , { root : __dirname}));
 server.get(/\/public\/?.*/, restify.serveStatic({
   directory: __dirname,
   default: 'index.html'

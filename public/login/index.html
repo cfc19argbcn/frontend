@@ -10,31 +10,31 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="html/common/http.js"></script>
-  <script src="html/sensors/sensors.js"></script>
-  <title>I'm lost - Sensors</title>
+  <script src="common/http.js"></script>
+  <script src="users/users.js"></script>
+  <title>I'm lost - Login</title>
 </head>
 <body>
   <div class="container">
     <hr>
     <div class="card bg-light">
       <article class="card-body mx-auto" style="max-width: 400px;">
-        <h4 class="card-title mt-3 text-center">Register Sensor</h4>
-        <form onsubmit="sensorsModule.register(event)">
+        <h4 class="card-title mt-3 text-center">Login</h4>
+        <form onsubmit="usersModule.login(event)">
           <div class="form-group input-group">
             <div class="input-group-prepend">
               <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
             </div>
-            <input id="sensor-id" name="sensor-id" class="form-control" placeholder="Sensor id" type="text">
+            <input id="email" name="email" class="form-control" placeholder="E-mail" type="text" autocomplete="email">
           </div>
           <div class="form-group input-group">
             <div class="input-group-prepend">
               <span class="input-group-text"> <i class="fa fa-user"></i> </span>
             </div>
-            <input id="sensor-name" name="sensor-name" class="form-control" placeholder="Sensor Name" type="text">
+            <input id="password" name="password" class="form-control" placeholder="password" type="text" autocomplete="current-password">
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">Register sensor</button>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
           </div>                                                       
       </form>
       </article>
