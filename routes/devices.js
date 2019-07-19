@@ -27,13 +27,22 @@ var createDevices = function(req, res, next) {
   next();
 };
 
+var getAllDevices = function(req, res, next) {
+  if (["admin", "user"].indexOf(req.userRole) < 0)
+    return res.send({ message: "You do not have permission" });
+  Devices.find({}, function(error, docs) {
+    res.send(docs);
+  });
+  next();
+};
+
 var getMqttCreds = function(req, res, next) {
   if (["admin", "user"].indexOf(req.userRole) < 0)
     return res.send({ message: "You do not have permission" });
   return res.send({ mqtt: cfg.mqtt });
-  next();
 };
 
 module.exports.getDeviceById = getDeviceById;
 module.exports.createDevices = createDevices;
 module.exports.getMqttCreds = getMqttCreds;
+module.exports.getAllDevices = getAllDevices;

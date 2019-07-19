@@ -40,14 +40,19 @@ server.get("/", function root(req, res, next) {
 });
 
 server.post("/api/login", authentication.userAuth);
+
 server.post("/api/user", authentication.verifyToken, users.createUser);
+server.get("/api/user", authentication.verifyToken, users.getAllUsers);
 server.get("/api/user/:id", authentication.verifyToken, users.getUserById);
+
+server.get("/api/devices", authentication.verifyToken, devices.getAllDevices);
 server.post("/api/devices", authentication.verifyToken, devices.createDevices);
 server.get(
   "/api/devices/:id",
   authentication.verifyToken,
   devices.getDeviceById
 );
+
 server.get("/api/mqtt_creds", authentication.verifyToken, devices.getMqttCreds);
 
 server.get(

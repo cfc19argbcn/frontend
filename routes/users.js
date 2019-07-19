@@ -12,6 +12,16 @@ var getUserById = function(req, res, next) {
   next();
 };
 
+var getAllUsers = function(req, res, next) {
+  if (["admin", "user"].indexOf(req.userRole) < 0)
+    return res.send({ message: "You do not have permission" });
+  User.find({}, function(error, docs) {
+    res.send(docs);
+  });
+  next();
+};
+
+
 var createUser = function(req, res, next) {
   if (["admin", "user"].indexOf(req.userRole) < 0)
     return res.send({ message: "You do not have permission" });
@@ -32,3 +42,4 @@ var createUser = function(req, res, next) {
 
 module.exports.getUserById = getUserById;
 module.exports.createUser = createUser;
+module.exports.getAllUsers = getAllUsers;
