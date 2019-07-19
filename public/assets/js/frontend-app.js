@@ -7,40 +7,40 @@ var commonElementIds = {
 };
 var rows;
 var sampleSensorData = [
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:49:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:50:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:51:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T06:52:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:53:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:54:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:55:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T06:56:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T06:57:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T06:58:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T06:59:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:00:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:01:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:02:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:03:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:04:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T07:05:55.174Z"}},
-	{"d":{"sound":81,"timestamp":"2018-06-30T07:06:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:07:55.174Z"}},
-	{"d":{"sound":66,"timestamp":"2018-06-30T07:08:55.174Z"}},
-	{"d":{"sound":65,"timestamp":"2018-06-30T07:09:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:10:55.174Z"}},
-	{"d":{"sound":68,"timestamp":"2018-06-30T07:11:55.174Z"}},
-	{"d":{"sound":120,"timestamp":"2018-06-30T07:12:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:13:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:14:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:15:55.174Z"}},
-	{"d":{"sound":82,"timestamp":"2018-06-30T07:16:55.174Z"}},
-	{"d":{"sound":69,"timestamp":"2018-06-30T07:17:55.174Z"}},
-	{"d":{"sound":61,"timestamp":"2018-06-30T07:18:55.174Z"}}
+	{ "d": { "sound": 65, "timestamp": "2018-06-30T06:49:55.174Z" } },
+	{ "d": { "sound": 81, "timestamp": "2018-06-30T06:50:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T06:51:55.174Z" } },
+	{ "d": { "sound": 66, "timestamp": "2018-06-30T06:52:55.174Z" } },
+	{ "d": { "sound": 65, "timestamp": "2018-06-30T06:53:55.174Z" } },
+	{ "d": { "sound": 81, "timestamp": "2018-06-30T06:54:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T06:55:55.174Z" } },
+	{ "d": { "sound": 66, "timestamp": "2018-06-30T06:56:55.174Z" } },
+	{ "d": { "sound": 65, "timestamp": "2018-06-30T06:57:55.174Z" } },
+	{ "d": { "sound": 81, "timestamp": "2018-06-30T06:58:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T06:59:55.174Z" } },
+	{ "d": { "sound": 66, "timestamp": "2018-06-30T07:00:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:01:55.174Z" } },
+	{ "d": { "sound": 82, "timestamp": "2018-06-30T07:02:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:03:55.174Z" } },
+	{ "d": { "sound": 66, "timestamp": "2018-06-30T07:04:55.174Z" } },
+	{ "d": { "sound": 65, "timestamp": "2018-06-30T07:05:55.174Z" } },
+	{ "d": { "sound": 81, "timestamp": "2018-06-30T07:06:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:07:55.174Z" } },
+	{ "d": { "sound": 66, "timestamp": "2018-06-30T07:08:55.174Z" } },
+	{ "d": { "sound": 65, "timestamp": "2018-06-30T07:09:55.174Z" } },
+	{ "d": { "sound": 82, "timestamp": "2018-06-30T07:10:55.174Z" } },
+	{ "d": { "sound": 68, "timestamp": "2018-06-30T07:11:55.174Z" } },
+	{ "d": { "sound": 120, "timestamp": "2018-06-30T07:12:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:13:55.174Z" } },
+	{ "d": { "sound": 82, "timestamp": "2018-06-30T07:14:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:15:55.174Z" } },
+	{ "d": { "sound": 82, "timestamp": "2018-06-30T07:16:55.174Z" } },
+	{ "d": { "sound": 69, "timestamp": "2018-06-30T07:17:55.174Z" } },
+	{ "d": { "sound": 61, "timestamp": "2018-06-30T07:18:55.174Z" } }
 ];
 
 var modalModule = (
-	function() {
+	function () {
 		var elementVisibleDisplay = "";
 		var elementNotVisibleDisplay = "none";
 		var addNodeForm = "addNodeFormContainer";
@@ -48,16 +48,16 @@ var modalModule = (
 		var updateNodeForm = 'updateNodeFormContainer';
 		var nodeIdSelectElementId = 'listNodeIds';
 		/** @param {string} elementId */
-		var viewModal = function(elementId) {
+		var viewModal = function (elementId) {
 			console.log("Showing modal: " + elementId);
 			document.getElementById(elementId).style.display = elementVisibleDisplay;
 		};
 		/** @param {string} elementId */
-		var hideModal = function(elementId) {
+		var hideModal = function (elementId) {
 			console.log("Hiding modal: " + elementId);
 			document.getElementById(elementId).style.display = elementNotVisibleDisplay;
 		};
-		var populateAssetOptions = function() {
+		var populateAssetOptions = function () {
 			document.getElementById(nodeIdSelectElementId).options.length = 0;
 			Object.keys(assets).map(assetKey => {
 				console.log(assetKey)
@@ -69,22 +69,22 @@ var modalModule = (
 					.add(assetKeyOption);
 			});
 		};
-		var hideAddNodeForm = function() {
+		var hideAddNodeForm = function () {
 			hideModal(addNodeForm);
 		};
-		var showAddNodeForm = function() {
+		var showAddNodeForm = function () {
 			viewModal(addNodeForm);
 		};
-		var hideSelectColumnsForm = function() {
+		var hideSelectColumnsForm = function () {
 			hideModal(selectColumnsForm);
 		};
-		var showSelectColumnsForm = function() {
+		var showSelectColumnsForm = function () {
 			viewModal(selectColumnsForm);
 		};
-		var hideUpdateForm = function() {
+		var hideUpdateForm = function () {
 			hideModal(updateNodeForm);
 		};
-		var showUpdateForm = function() {
+		var showUpdateForm = function () {
 			viewModal(updateNodeForm);
 			populateAssetOptions();
 		};
@@ -99,7 +99,7 @@ var modalModule = (
 	}
 )();
 
-var assetPathsModule = (function() {
+var assetPathsModule = (function () {
 	var removeAssetPaths = function () {
 		Object.keys(assets).map((asset) => {
 			removeAssetPath(asset)
@@ -110,7 +110,7 @@ var assetPathsModule = (function() {
 		mymap.removeLayer(trackableAssetNodeModule.getAssetByKey(id).path)
 	}
 
-	var genRandomNums = function() {
+	var genRandomNums = function () {
 		return [
 			Math.floor(Math.random() * 255),
 			Math.floor(Math.random() * 255),
@@ -118,18 +118,18 @@ var assetPathsModule = (function() {
 		].join(',')
 	}
 
-	var drawAssetPath = function(id) {
+	var drawAssetPath = function (id) {
 		var asset = trackableAssetNodeModule.getAssetByKey(id);
 		asset.path = new L.Polyline(asset.points, {
-				color: "rgb(" + genRandomNums() + ")",
-				weight: 1,
-				opacity: 0.8,
-				smoothFactor: 0
+			color: "rgb(" + genRandomNums() + ")",
+			weight: 1,
+			opacity: 0.8,
+			smoothFactor: 0
 		});
 		asset.path.addTo(mymap);
 	}
 
-	var drawAssetPaths = function() {
+	var drawAssetPaths = function () {
 		Object.keys(assets).map((asset) => {
 			drawAssetPath(asset)
 		})
@@ -147,27 +147,28 @@ function handleFileSelect(evt) {
 		console.log(evt)
 		var reader = new FileReader();
 		reader.readAsText(f)
-		reader.onload = (function(event) {
+		reader.onload = (function (event) {
 			console.log("file loaded")
 			console.log(event)
-				console.log("parsing as csv")
-				var csv = event.target.result.split('\n')
-				console.log("extracting headers")
-				headers = csv[0].split(',')
-				console.log(headers)
-				rows = csv.slice(1, csv.length - 1)
-				var selects = document.getElementsByTagName('select');
-				viewModal('selectFileColumns')
-				for (var i = 0; i < selects.length; i++) {
-					for (var j = 0; j < headers.length; j++) {
-						console.log("appending header: " + headers[j] )
-						var opt = document.createElement("option");
-						opt.text = headers[j]
-						opt.value = headers[j]
-						if (opt.text) {
-							selects[i].options.add(opt)
-						}
-				}}
+			console.log("parsing as csv")
+			var csv = event.target.result.split('\n')
+			console.log("extracting headers")
+			headers = csv[0].split(',')
+			console.log(headers)
+			rows = csv.slice(1, csv.length - 1)
+			var selects = document.getElementsByTagName('select');
+			viewModal('selectFileColumns')
+			for (var i = 0; i < selects.length; i++) {
+				for (var j = 0; j < headers.length; j++) {
+					console.log("appending header: " + headers[j])
+					var opt = document.createElement("option");
+					opt.text = headers[j]
+					opt.value = headers[j]
+					if (opt.text) {
+						selects[i].options.add(opt)
+					}
+				}
+			}
 		});
 	}
 }
@@ -178,7 +179,7 @@ document.getElementById(commonElementIds.files)
 		false
 	);
 
-var qmsModule = (function() {
+var qmsModule = (function () {
 	function loadJSON(callback) {
 		var xobj = new XMLHttpRequest();
 		xobj.overrideMimeType("application/json");
@@ -221,13 +222,13 @@ var qmsModule = (function() {
 		} else {
 			trackableAssetNodeModule.updateTrackableAsset(baseNode);
 		}
-	}		
+	}
 
-	var initMQTTClient = function(mqttCreds) {
-		var watson_channel = 'iot-2/type/' + mqttCreds.IOT_DEVICE_TYPE + '/id/' + mqttCreds.IOT_DEVICE_ID + '/evt/'+  mqttCreds.IOT_EVENT_TYPE + '/fmt/json'
+	var initMQTTClient = function (mqttCreds) {
+		var watson_channel = 'iot-2/type/' + mqttCreds.IOT_DEVICE_TYPE + '/id/' + mqttCreds.IOT_DEVICE_ID + '/evt/' + mqttCreds.IOT_EVENT_TYPE + '/fmt/json'
 		var cleanSession = true;
 		var subscribeOptions = {
-			onSuccess: function() {
+			onSuccess: function () {
 				console.log("subscription set")
 				mqttClient.onMessageArrived = qmsMessageArrivedHandler;
 			}
@@ -260,12 +261,12 @@ var qmsModule = (function() {
 	};
 })();
 
-qmsModule.loadJSON(function(response) {
-  console.log("Loading MQTT credentials")
-  qmsModule.initMQTTClient(JSON.parse(response))
+qmsModule.loadJSON(function (response) {
+	console.log("Loading MQTT credentials")
+	qmsModule.initMQTTClient(JSON.parse(response))
 });
 
-var mymap = (function() {
+var mymap = (function () {
 	var leafletMap = L.map(commonElementIds.mapId).setView([34.000037, -118.317471], 100);
 	L.esri.basemapLayer("Topographic").addTo(leafletMap);
 
@@ -293,7 +294,7 @@ var mymap = (function() {
 
 var trackableAssetNodeModule = (function () {
 
-	var renderList = function() {
+	var renderList = function () {
 		var nodeList = document.getElementById("nodeList");
 		nodeList.innerHTML = null
 		var assetKeys = Object.keys(assets)
@@ -327,7 +328,7 @@ var trackableAssetNodeModule = (function () {
 	 * 	circle?: L.Circle
 	 * }}
 	 */
-	var createTrackableAssetNode = function({
+	var createTrackableAssetNode = function ({
 		id,
 		long,
 		lat,
@@ -351,9 +352,9 @@ var trackableAssetNodeModule = (function () {
 				fillOpacity: 0.1
 			};
 			trackableAssetNode.circle = L
-					.circle([long, lat], sensorVal, circleConfig)
-					.addTo(mymap)
-					.bindPopup("LoRA Node: " + id);
+				.circle([long, lat], sensorVal, circleConfig)
+				.addTo(mymap)
+				.bindPopup("LoRA Node: " + id);
 
 			return trackableAssetNode;
 		}
@@ -370,8 +371,8 @@ var trackableAssetNodeModule = (function () {
 	 * 	sensorVal: string=
 	 * }} opts 
 	 */
-	var initTrackableAsset = function(opts) {
-		const {id} = opts;
+	var initTrackableAsset = function (opts) {
+		const { id } = opts;
 		console.log("initializing asset: " + id);
 		const newTrackableAssetNode = createTrackableAssetNode(opts);
 		assets[id] = newTrackableAssetNode;
@@ -385,8 +386,8 @@ var trackableAssetNodeModule = (function () {
 	 * }} opts 
 	 * @returns {ReturnType<initTrackableAsset>}
 	 */
-	var getAssetByIdOrCreateNewOne = function(opts) {
-		var {id} = opts;
+	var getAssetByIdOrCreateNewOne = function (opts) {
+		var { id } = opts;
 		if (!getAssetByKey(id)) {
 			console.log("asset doesn't exist, creating: " + id)
 			return initTrackableAsset(opts);
@@ -445,13 +446,13 @@ var trackableAssetNodeModule = (function () {
 })();
 
 var formModule = (
-	function() {
+	function () {
 		const nodeIdElementId = 'nodeId';
 		const nodeLongitudeElementId = 'nodeLongitude';
 		const nodeLatitudeElementId = 'nodeLatitude';
 		const nodeSensorTypeElementId = 'nodeSensorType';
 		const nodeSensorValueElementId = 'nodeSensorValue';
-		var getInputValue = function($, elementId) {
+		var getInputValue = function ($, elementId) {
 			const elementIdCssSelector = `#${elementId}`;
 			return $(elementIdCssSelector).val();
 		};
@@ -459,7 +460,7 @@ var formModule = (
 		 * @param {*} $ 
 		 * @param {"hideAddNodeForm" | "hideUpdateForm"} hideModalFnName 
 		 */
-		var updateTrackableAssetBasedOnForm = function($, hideModalFnName) {
+		var updateTrackableAssetBasedOnForm = function ($, hideModalFnName) {
 			trackableAssetNodeModule.updateTrackableAsset({
 				id: getInputValue($, nodeIdElementId),
 				lat: getInputValue($, nodeLatitudeElementId),
@@ -474,13 +475,13 @@ var formModule = (
 
 		var lineBreaks = /\r?\n|\r/g;
 		/** @param {string} unparsedRow */
-		var parseRow = function(unparsedRow) {
+		var parseRow = function (unparsedRow) {
 			return unparsedRow.replace(lineBreaks, " ").split(',');
 		};
-		var isLastIndexOfArray = function(arr, index) {
+		var isLastIndexOfArray = function (arr, index) {
 			return index == (arr.length - 1);
 		}
-		var handleOnSubmitFileColumnsForm = function() {
+		var handleOnSubmitFileColumnsForm = function () {
 			var elementIds = {
 				nodeIdSelect: 'nodeIdSelect',
 				nodeLongitudeSelect: 'nodeLongitudeSelect',
@@ -496,7 +497,7 @@ var formModule = (
 			for (i in rows) {
 				var row = parseRow(rows[i])
 				var selectedNodeId = row[nodeIdSelect.selectedIndex];
-				
+
 				/**
 				 * @type {{
 				 * 	points: number[][],
@@ -544,11 +545,11 @@ var formModule = (
 					assetKeys.forEach(setSliderMaxValue);
 				}
 			}
-			var timeView  = document.getElementById(elementIds.timeView);
+			var timeView = document.getElementById(elementIds.timeView);
 			timeView.onload = function () {
 				timeView.innerHTML = (new Date()).toISOString()
 			}
-			slider.oninput = function() {
+			slider.oninput = function () {
 				for (id in assets) {
 					const selectedAsset = trackableAssetNodeModule.getAssetByKey(id);
 					if (selectedAsset.points[this.value]) {
@@ -566,11 +567,11 @@ var formModule = (
 			}
 		}
 
-		var handleOnSubmitAddNodeForm = function($) {
+		var handleOnSubmitAddNodeForm = function ($) {
 			return updateTrackableAssetBasedOnForm($, "hideAddNodeForm");
 		}
 
-		var handleOnSubmitUpdateNodeForm = function($) {
+		var handleOnSubmitUpdateNodeForm = function ($) {
 			return updateTrackableAssetBasedOnForm($, "hideUpdateForm");
 		};
 
@@ -582,22 +583,22 @@ var formModule = (
 	}
 )();
 
-var {setSliderMaxAttribute, slider} = (function() {
+var { setSliderMaxAttribute, slider } = (function () {
 	const timeSlider = document.getElementById(commonElementIds.timeSlider);
 
-	timeSlider.oninput = function() {
+	timeSlider.oninput = function () {
 		Object.keys(assets)
 			.map((assetKey) => {
 				const selectedAsset = trackableAssetNodeModule.getAssetByKey(assetKey);
 				if (selectedAsset.points[this.value]) {
 					selectedAsset.marker.setLatLng(selectedAsset.points[this.value]).update();
-					console.log("updating " +  assetKey + " to " + selectedAsset.points[this.value].toString())
+					console.log("updating " + assetKey + " to " + selectedAsset.points[this.value].toString())
 				}
 			})
 		document.getElementById(commonElementIds.timeView).innerHTML =
 			trackableAssetNodeModule.getAssetByKey(assetKey).timestamps[this.value];
 	}
-	var setSliderMaxAttribute = function(maxValue) {
+	var setSliderMaxAttribute = function (maxValue) {
 		timeSlider.setAttribute("max", maxValue);
 	}
 	setSliderMaxAttribute(sampleSensorData.length - 1);

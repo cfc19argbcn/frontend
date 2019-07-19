@@ -1,13 +1,14 @@
-[{
-		"username": "Test1",
-		"password": "$2a$08$no4HtLrJNZR2F6CZ88QwZ.UCmOMipO4fzMQrli5EwiXlqbTNChXVe",
-		"email": "test1@gmail.com",
-		"role": "admin"
-	},
-	{
-		"username": "Test2",
-		"password": "$2a$08$no4HtLrJNZR2F6CZ88QwZ.UCmOMipO4fzMQrli5EwiXlqbTNChXVe",
-		"email": "test2@gmail.com",
-		"role": "user"
-	}
+[
+  {
+    "username": "Test1",
+    "password": "$2a$08$no4HtLrJNZR2F6CZ88QwZ.UCmOMipO4fzMQrli5EwiXlqbTNChXVe",
+    "email": "test1@gmail.com",
+    "role": "admin"
+  },
+  {
+    "username": "Test2",
+    "password": "$2a$08$no4HtLrJNZR2F6CZ88QwZ.UCmOMipO4fzMQrli5EwiXlqbTNChXVe",
+    "email": "test2@gmail.com",
+    "role": "user"
+  }
 ]

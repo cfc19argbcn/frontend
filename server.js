@@ -43,15 +43,27 @@ server.post("/api/login", authentication.userAuth);
 server.post("/api/user", authentication.verifyToken, users.createUser);
 server.get("/api/user/:id", authentication.verifyToken, users.getUserById);
 server.post("/api/devices", authentication.verifyToken, devices.createDevices);
-server.get("/api/devices/:id", authentication.verifyToken, devices.getDeviceById);
+server.get(
+  "/api/devices/:id",
+  authentication.verifyToken,
+  devices.getDeviceById
+);
 server.get("/api/mqtt_creds", authentication.verifyToken, devices.getMqttCreds);
 
-server.get(/\/public\/?.*/, restify.serveStatic({
-  directory: __dirname,
-  default: 'index.html'
-}));
+server.get(
+  /\/public\/?.*/,
+  restify.serveStatic({
+    directory: __dirname,
+    default: "index.html"
+  })
+);
 
 server.listen(config.server.port, function() {
-  const url = config.server.protocol + config.server.hostname + ":" + config.server.port + "/";
+  const url =
+    config.server.protocol +
+    config.server.hostname +
+    ":" +
+    config.server.port +
+    "/";
   log.info("Server ready on %s", url);
 });
